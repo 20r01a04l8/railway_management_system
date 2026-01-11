@@ -1,0 +1,554 @@
+<!-- Payment Section HTML -->
+<div id="payment-section" class="container mt-4" style="display: none;">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Payment Methods</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Payment Method Selection -->
+                    <div class="mb-3">
+                        <label class="form-label">Select Payment Method</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="walletPayment" value="WALLET">
+                            <label class="form-check-label" for="walletPayment">
+                                Wallet (Balance: ₹<span id="walletBalance">0.00</span>)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="cardPayment" value="CREDIT_CARD">
+                            <label class="form-check-label" for="cardPayment">
+                                Credit/Debit Card
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="upiPayment" value="UPI">
+                            <label class="form-check-label" for="upiPayment">
+                                UPI
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Credit Card Form -->
+                    <div id="cardForm" style="display: none;">
+                        <h6>Credit Card Details</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="cardNumber" class="form-label">Card Number</label>
+                                <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="cardholderName" class="form-label">Cardholder Name</label>
+                                <input type="text" class="form-control" id="cardholderName" placeholder="John Doe">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="expiryMonth" class="form-label">Expiry Month</label>
+                                <select class="form-control" id="expiryMonth">
+                                    <option value="">Month</option>
+                                    <option value="01">01</option>
+                                    <option value="02">02</option>
+                                    <option value="03">03</option>
+                                    <option value="04">04</option>
+                                    <option value="05">05</option>
+                                    <option value="06">06</option>
+                                    <option value="07">07</option>
+                                    <option value="08">08</option>
+                                    <option value="09">09</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="expiryYear" class="form-label">Expiry Year</label>
+                                <select class="form-control" id="expiryYear">
+                                    <option value="">Year</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                    <option value="2028">2028</option>
+                                    <option value="2029">2029</option>
+                                    <option value="2030">2030</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="cvv" class="form-label">CVV</label>
+                                <input type="password" class="form-control" id="cvv" placeholder="123" maxlength="4">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cardType" class="form-label">Card Type</label>
+                            <select class="form-control" id="cardType">
+                                <option value="">Select Card Type</option>
+                                <option value="Visa">Visa</option>
+                                <option value="MasterCard">MasterCard</option>
+                                <option value="RuPay">RuPay</option>
+                                <option value="American Express">American Express</option>
+                            </select>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="saveCard">
+                            <label class="form-check-label" for="saveCard">
+                                Save this card for future payments
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Saved Cards -->
+                    <div id="savedCards" style="display: none;">
+                        <h6>Saved Cards</h6>
+                        <div id="savedCardsList"></div>
+                        <button type="button" class="btn btn-link" onclick="showNewCardForm()">+ Add New Card</button>
+                    </div>
+
+                    <!-- UPI Form -->
+                    <div id="upiForm" style="display: none;">
+                        <h6>UPI Payment</h6>
+                        <div id="savedUpiIds" style="display: none;">
+                            <div id="savedUpiList"></div>
+                            <button type="button" class="btn btn-link" onclick="showNewUpiForm()">+ Add New UPI ID</button>
+                        </div>
+                        <div id="newUpiForm">
+                            <div class="mb-3">
+                                <label for="upiId" class="form-label">UPI ID</label>
+                                <input type="text" class="form-control" id="upiId" placeholder="yourname@upi">
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="saveUpi">
+                                <label class="form-check-label" for="saveUpi">
+                                    Save this UPI ID for future payments
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary" onclick="processPayment()">Pay Now</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wallet Section -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>My Wallet</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <h3 class="text-primary">₹<span id="currentBalance">0.00</span></h3>
+                        <small class="text-muted">Available Balance</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="addAmount" class="form-label">Add Money</label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input type="number" class="form-control" id="addAmount" placeholder="0.00" min="1" step="0.01">
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="btn btn-success w-100 mb-3" onclick="addMoneyToWallet()">Add Money</button>
+                    
+                    <hr>
+                    
+                    <h6>Recent Transactions</h6>
+                    <div id="walletTransactions" class="transaction-list">
+                        <!-- Transactions will be loaded here -->
+                    </div>
+                    
+                    <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="loadWalletTransactions()">View All Transactions</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Payment functionality
+let currentBookingId = null;
+
+// Show payment section
+function showPaymentSection(bookingId) {
+    currentBookingId = bookingId;
+    document.getElementById('payment-section').style.display = 'block';
+    loadWalletBalance();
+    loadSavedCards();
+}
+
+// Payment method selection
+document.addEventListener('DOMContentLoaded', function() {
+    const paymentMethods = document.querySelectorAll('input[name="paymentMethod"]');
+    paymentMethods.forEach(method => {
+        method.addEventListener('change', function() {
+            document.getElementById('cardForm').style.display = 'none';
+            document.getElementById('savedCards').style.display = 'none';
+            document.getElementById('upiForm').style.display = 'none';
+            
+            if (this.value === 'CREDIT_CARD') {
+                loadSavedCards();
+            } else if (this.value === 'UPI') {
+                document.getElementById('upiForm').style.display = 'block';
+                loadSavedUpiIds();
+            }
+        });
+    });
+});
+
+// Load wallet balance
+async function loadWalletBalance() {
+    try {
+        const response = await fetch('http://localhost:8000/payments/wallet', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        
+        if (response.ok) {
+            const wallet = await response.json();
+            document.getElementById('walletBalance').textContent = wallet.balance;
+            document.getElementById('currentBalance').textContent = wallet.balance;
+        }
+    } catch (error) {
+        console.error('Error loading wallet balance:', error);
+    }
+}
+
+// Load saved cards
+async function loadSavedCards() {
+    try {
+        const response = await fetch('http://localhost:8000/payments/credit-cards', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        
+        if (response.ok) {
+            const cards = await response.json();
+            const cardsList = document.getElementById('savedCardsList');
+            
+            if (cards.length > 0) {
+                document.getElementById('savedCards').style.display = 'block';
+                cardsList.innerHTML = cards.map(card => `
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="savedCard" value="${card.id}" id="card${card.id}">
+                        <label class="form-check-label" for="card${card.id}">
+                            ${card.card_number} - ${card.cardholder_name}
+                            <small class="text-muted">(${card.card_type})</small>
+                        </label>
+                    </div>
+                `).join('');
+            } else {
+                showNewCardForm();
+            }
+        }
+    } catch (error) {
+        console.error('Error loading saved cards:', error);
+        showNewCardForm();
+    }
+}
+
+// Load saved UPI IDs
+async function loadSavedUpiIds() {
+    try {
+        const response = await fetch('http://localhost:8000/payments/upi-ids', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        
+        if (response.ok) {
+            const upiIds = await response.json();
+            const upiList = document.getElementById('savedUpiList');
+            
+            if (upiIds.length > 0) {
+                document.getElementById('savedUpiIds').style.display = 'block';
+                document.getElementById('newUpiForm').style.display = 'none';
+                upiList.innerHTML = upiIds.map(upi => `
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="savedUpi" value="${upi.id}" id="upi${upi.id}">
+                        <label class="form-check-label" for="upi${upi.id}">
+                            ${upi.upi_id}
+                            <small class="text-muted">(Balance: ₹${upi.balance})</small>
+                        </label>
+                    </div>
+                `).join('');
+            } else {
+                showNewUpiForm();
+            }
+        }
+    } catch (error) {
+        console.error('Error loading saved UPI IDs:', error);
+        showNewUpiForm();
+    }
+}
+
+// Show new UPI form
+function showNewUpiForm() {
+    document.getElementById('newUpiForm').style.display = 'block';
+    document.getElementById('savedUpiIds').style.display = 'none';
+}
+
+// Show new card form
+function showNewCardForm() {
+    document.getElementById('cardForm').style.display = 'block';
+    document.getElementById('savedCards').style.display = 'none';
+}
+
+// Add money to wallet
+async function addMoneyToWallet() {
+    const amount = document.getElementById('addAmount').value;
+    
+    if (!amount || amount <= 0) {
+        alert('Please enter a valid amount');
+        return;
+    }
+    
+    try {
+        const response = await fetch('http://localhost:8000/payments/wallet/add-money', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ amount: parseFloat(amount) })
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            alert(result.message);
+            document.getElementById('addAmount').value = '';
+            loadWalletBalance();
+            loadWalletTransactions();
+        } else {
+            const error = await response.json();
+            alert(error.detail || 'Failed to add money');
+        }
+    } catch (error) {
+        console.error('Error adding money:', error);
+        alert('Failed to add money to wallet');
+    }
+}
+
+// Load wallet transactions
+async function loadWalletTransactions() {
+    try {
+        const response = await fetch('http://localhost:8000/payments/wallet/transactions', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        
+        if (response.ok) {
+            const transactions = await response.json();
+            const transactionsList = document.getElementById('walletTransactions');
+            
+            transactionsList.innerHTML = transactions.slice(0, 5).map(tx => `
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <small class="text-muted">${tx.description}</small><br>
+                        <small class="text-muted">${new Date(tx.created_at).toLocaleDateString()}</small>
+                    </div>
+                    <div class="text-${tx.transaction_type === 'credit' ? 'success' : 'danger'}">
+                        ${tx.transaction_type === 'credit' ? '+' : '-'}₹${tx.amount}
+                    </div>
+                </div>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Error loading transactions:', error);
+    }
+}
+
+// Process payment
+async function processPayment() {
+    const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked');
+    
+    if (!selectedMethod) {
+        alert('Please select a payment method');
+        return;
+    }
+    
+    if (!currentBookingId) {
+        alert('No booking selected');
+        return;
+    }
+    
+    let paymentData = {
+        booking_id: currentBookingId,
+        payment_method: selectedMethod.value
+    };
+    
+    // Validate based on payment method
+    if (selectedMethod.value === 'CREDIT_CARD') {
+        const savedCard = document.querySelector('input[name="savedCard"]:checked');
+        if (savedCard) {
+            paymentData.card_id = parseInt(savedCard.value);
+        } else {
+            // Validate new card form
+            const cardNumber = document.getElementById('cardNumber').value;
+            const cardholderName = document.getElementById('cardholderName').value;
+            const expiryMonth = document.getElementById('expiryMonth').value;
+            const expiryYear = document.getElementById('expiryYear').value;
+            const cvv = document.getElementById('cvv').value;
+            const cardType = document.getElementById('cardType').value;
+            
+            if (!cardNumber || !cardholderName || !expiryMonth || !expiryYear || !cvv || !cardType) {
+                alert('Please fill all card details');
+                return;
+            }
+            
+            // Save card if requested
+            if (document.getElementById('saveCard').checked) {
+                const savedCard = await saveNewCard();
+                if (savedCard) {
+                    paymentData.card_id = savedCard.id;
+                }
+            }
+        }
+    } else if (selectedMethod.value === 'UPI') {
+        const savedUpi = document.querySelector('input[name="savedUpi"]:checked');
+        if (savedUpi) {
+            paymentData.upi_id = parseInt(savedUpi.value);
+        } else {
+            // Validate new UPI form
+            const upiId = document.getElementById('upiId').value;
+            
+            if (!upiId || !upiId.includes('@')) {
+                alert('Please enter a valid UPI ID');
+                return;
+            }
+            
+            // Save UPI if requested
+            if (document.getElementById('saveUpi').checked) {
+                const savedUpi = await saveNewUpiId();
+                if (savedUpi) {
+                    paymentData.upi_id = savedUpi.id;
+                }
+            }
+        }
+    }
+    
+    try {
+        const response = await fetch('http://localhost:8000/payments/process', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(paymentData)
+        });
+        
+        if (response.ok) {
+            const payment = await response.json();
+            alert('Payment processed successfully!');
+            document.getElementById('payment-section').style.display = 'none';
+            loadUserBookings(); // Refresh bookings
+        } else {
+            const error = await response.json();
+            alert(error.detail || 'Payment failed');
+        }
+    } catch (error) {
+        console.error('Error processing payment:', error);
+        alert('Payment processing failed');
+    }
+}
+
+// Save new card
+async function saveNewCard() {
+    const cardData = {
+        card_number: document.getElementById('cardNumber').value,
+        cardholder_name: document.getElementById('cardholderName').value,
+        expiry_month: parseInt(document.getElementById('expiryMonth').value),
+        expiry_year: parseInt(document.getElementById('expiryYear').value),
+        cvv: document.getElementById('cvv').value,
+        card_type: document.getElementById('cardType').value
+    };
+    
+    try {
+        const response = await fetch('http://localhost:8000/payments/credit-cards', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(cardData)
+        });
+        
+        if (response.ok) {
+            const savedCard = await response.json();
+            console.log('Card saved successfully');
+            return savedCard;
+        }
+    } catch (error) {
+        console.error('Error saving card:', error);
+    }
+    return null;
+}
+
+// Save new UPI ID
+async function saveNewUpiId() {
+    const upiData = {
+        upi_id: document.getElementById('upiId').value
+    };
+    
+    try {
+        const response = await fetch('http://localhost:8000/payments/upi-ids', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(upiData)
+        });
+        
+        if (response.ok) {
+            const savedUpi = await response.json();
+            console.log('UPI ID saved successfully');
+            return savedUpi;
+        }
+    } catch (error) {
+        console.error('Error saving UPI ID:', error);
+    }
+    return null;
+}
+
+// Format card number input
+document.addEventListener('DOMContentLoaded', function() {
+    const cardNumberInput = document.getElementById('cardNumber');
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', function() {
+            let value = this.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            this.value = formattedValue;
+        });
+    }
+});
+</script>
+
+<style>
+.transaction-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.form-check-input:checked + .form-check-label {
+    font-weight: bold;
+}
+
+#cardForm {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    margin-top: 1rem;
+    background-color: #f8f9fa;
+}
+
+.input-group-text {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+}
+</style>

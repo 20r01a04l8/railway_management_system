@@ -1,0 +1,153 @@
+<!-- Add Money Modal -->
+<div id="addMoneyModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Money to Wallet</h5>
+                <button type="button" class="btn-close" onclick="closeAddMoneyModal()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <h4 class="text-primary">Current Balance: ₹<span id="modalWalletBalance">0.00</span></h4>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Amount to Add</label>
+                    <div class="input-group">
+                        <span class="input-group-text">₹</span>
+                        <input type="number" class="form-control" id="addMoneyAmount" placeholder="0.00" min="1" step="0.01">
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Quick Amount</label>
+                    <div class="quick-amounts">
+                        <button class="btn btn-outline-primary btn-sm" onclick="setQuickAmount(100)">₹100</button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="setQuickAmount(500)">₹500</button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="setQuickAmount(1000)">₹1000</button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="setQuickAmount(2000)">₹2000</button>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Payment Method for Adding Money</label>
+                    <div class="add-money-methods">
+                        <div class="payment-method" onclick="selectAddMoneyMethod('card')">
+                            <i class="fas fa-credit-card fa-2x mb-2 text-primary"></i>
+                            <div>Credit/Debit Card</div>
+                        </div>
+                        <div class="payment-method" onclick="selectAddMoneyMethod('upi')">
+                            <i class="fas fa-mobile-alt fa-2x mb-2 text-success"></i>
+                            <div>UPI</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAddMoneyModal()">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="addMoneyToWallet()">
+                    <span id="addMoneyBtnText">Add Money</span>
+                    <span id="addMoneySpinner" class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.quick-amounts {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.add-money-methods {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.add-money-methods .payment-method {
+    padding: 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.add-money-methods .payment-method:hover,
+.add-money-methods .payment-method.selected {
+    border-color: #28a745;
+    background: rgba(40, 167, 69, 0.1);
+}
+</style>
+
+<script>
+let selectedAddMoneyMethod = null;
+
+function showAddMoneyModal() {
+    document.getElementById('modalWalletBalance').textContent = walletBalance.toFixed(2);
+    document.getElementById('addMoneyModal').classList.add('show');
+}
+
+function closeAddMoneyModal() {
+    document.getElementById('addMoneyModal').classList.remove('show');
+    document.getElementById('addMoneyAmount').value = '';
+    selectedAddMoneyMethod = null;
+    document.querySelectorAll('.add-money-methods .payment-method').forEach(el => el.classList.remove('selected'));
+}
+
+function setQuickAmount(amount) {
+    document.getElementById('addMoneyAmount').value = amount;
+}
+
+function selectAddMoneyMethod(method) {
+    selectedAddMoneyMethod = method;
+    document.querySelectorAll('.add-money-methods .payment-method').forEach(el => el.classList.remove('selected'));
+    event.target.closest('.payment-method').classList.add('selected');
+}
+
+async function addMoneyToWallet() {
+    const amount = parseFloat(document.getElementById('addMoneyAmount').value);
+    
+    if (!amount || amount <= 0) {
+        alert('Please enter a valid amount');
+        return;
+    }
+    
+    if (!selectedAddMoneyMethod) {
+        alert('Please select a payment method');
+        return;
+    }
+    
+    setLoading('addMoney', true);
+    
+    try {
+        // Simulate payment processing for adding money
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Add money to wallet via API
+        const response = await apiRequest('/payments/wallet/add-money', {
+            method: 'POST',
+            body: JSON.stringify({ amount: amount })
+        });
+        
+        alert(`₹${amount} added to wallet successfully!`);
+        walletBalance += amount;
+        
+        // Update all wallet balance displays
+        document.getElementById('walletBalance').textContent = walletBalance.toFixed(2);
+        document.getElementById('currentWalletBalance').textContent = walletBalance.toFixed(2);
+        document.getElementById('modalWalletBalance').textContent = walletBalance.toFixed(2);
+        
+        closeAddMoneyModal();
+        checkWalletBalance(); // Recheck if wallet payment is now possible
+        
+    } catch (err) {
+        alert('Failed to add money: ' + err.message);
+    } finally {
+        setLoading('addMoney', false);
+    }
+}
+</script>
